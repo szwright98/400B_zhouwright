@@ -1,0 +1,4 @@
+3D Distance is: 4.245 kpc
+3D Velocity is: 312.135 km / s
+Mass is: 0.0001
+3D Distance in ly is: 13845.33823396728 lyr

@@ -1,0 +1,36 @@
+import numpy as np
+import astropy.units as u
+from ReadFile import Read
+
+def ParticleInfo(filename,particle_type,particle_num):
+    time, part_total, data =  Read(filename)
+    index = np.where(data['type'] == particle_type)
+    newdata = data['type'][index]
+
+    print(type(particle_num))
+    
+    xpos = newdata['x'][int(particle_num)]
+    ypos = newdata['y'][int(particle_num)]
+    zpos = newdata['z'][int(particle_num)]
+    pos = np.round((sqrt(xpos**2+ypos**2+zpos**2)),3)
+    pos = pos * u.kpc 
+
+    xvel = newdata['vx'][int(particle_num)]
+    yvel = newdata['vy'][int(particle_num)]
+    zvel = newdata['vz'][int(particle_num)]
+    vel = np.round((sqrt(xvel**2+yvel**2+zvel**2)),3)
+    vel = vel * u.kms 
+
+    mass = newdata['m'][particle_num]
+
+    return pos, vel, mass
+
+result = ParticleInfo("MW_000.txt",2,9)
+pos = result[0]
+vel = result[1]
+mass = result[2]
+
+print(pos)
+print(vel)
+print(mass)
+
