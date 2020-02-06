@@ -1,0 +1,26 @@
+import numpy as np
+import astropy.units as u
+import astropy.table
+from ReadFile import Read
+#Function to return the total mass of a galaxy component
+def ComponentMass(filename,particletype):
+	#inputs:
+		#particletype is the location or type or particle in the galaxy(Halo, disk, bulge)
+		#filename is the name of the file that contains the data
+	#returns the summed mass of all the particles of a given type in 1e12 Msun (converted from 1e10 Msun)
+	#read in file 
+	time, total, data = Read(filename)
+	#store indeices of a certain particle type
+	index= np.where(data['type'] == particletype)
+	#create a new array with the masses of each particle of the given type
+	#mass is stored in units of 1e10 Msun
+	mdata = data['m'][index]*1e10*u.Msun
+	#get total mass
+	mtotal = np.round(np.sum(mdata))
+	#perform conversion
+	mtotal.to(1e12*u.Msun)
+	return mtotal
+#declare Qtable
+t = QTable(names = ('Galaxy Name', 'Halo Mass(1e12 Msun)','Disk Mass("")','Bulge Mass("")','Total("")','fbar') dtype=('s','f','f','f','f','f'))
+#fill Qtable with function calls
+t.add_row(('Milky Way',ComponentMass(MW_000.txt,1),ComponentMass(MW_000.txt,2),ComponentMass(MW_000.txt,3),
