@@ -1,0 +1,38 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import astropy.units as u
+from MassCalc import MassProfile
+
+MProf = MassProfile("MW",0)
+r = np.arange(0.25,30.5,1.5)
+
+MPHalo = MProf.MassEnclosed(r,1)
+MPDisk = MProf.MassEnclosed(r,2)
+MPBulge = MProf.MassEnclosed(r,3)
+
+MPTotal = MProf.MassEnclosedTotal(r)
+a= 1.0 
+MPHern = MProf.HernquistProfile(r,a,MPTotal)
+
+fig,ax = plt.subplots(figsize=(10,8))
+
+label_size = 22
+matplotlib.rcParams['xtick.labelsize'] = label_size 
+matplotlib.rcParams['ytick.labelsize'] = label_size
+
+
+plt.plot(r, MPHalo,linewidth = 3, color= 'k', label='Halo Mass')
+plt.plot(r, MPDisk,linewidth = 3, color ='b', label='Disk Mass')
+plt.plot(r, MPBulge,linewidth = 3, color ='r', label='Bulge Mass')
+plt.plot(r, MPTotal,linewidth = 5, color ='g', label='Total Mass')
+plt.plot(r, MPHern,linewidth = 5, color ='orange', label='Hernquist Mass')
+
+# Axes labels 
+plt.xlabel('Radius kpc',fontsize=22) 
+plt.ylabel('Enclosed Mass Msun', fontsize=22)
+plt.semilogy
+
+# Legend
+plt.legend(loc='lower right',fontsize='x-large')
+plt.show()

@@ -1,0 +1,122 @@
+import numpy as np
+from astropy import units as u
+from ReadFile import Read
+import CenterOfMassMod
+from astropy.constants import G
+
+G = G.to(u.kpc*u.km**2/u.s**2/u.Msun)
+
+# class to describe the masses and positions of masses in a galaxy
+class MassProfile:
+	def __init__(self,galaxy,snap):
+		# initialize with:
+		# galaxy, string that contains the name of the glaxy i.e. "MW"
+		# snap, integer that gives the snapshot number, corresponding to time
+	
+		# use galaxy and snap to reconstruct string name
+		ilbl = '000' +str(snap)
+		# remove all but three last digits
+		ilbl = ilbl[-3:]
+		self.filename = "%s_"%(galaxy) + ilbl + '.txt'
+	        #print (self.filename) #troubleshooting
+		# usual file reading
+		self.time, self.total, self.data = Read(self.filename)
+		self.gname = galaxy 
+		# pull data values. no need to distinguish by particle type (yet)
+		self.m = self.data['m']
+		self.x = self.data['x']*u.kpc
+		self.y = self.data['y']*u.kpc
+		self.z = self.data['z']*u.kpc
+	        #print self.z #troubleshoot
+	def MassEnclosed(self,radii,ptype):
+		# function to calculate the mass enclosed out to varying radii for a certain particle type
+		# inputs:
+		# radii, array of radius magnitudes in kpc
+		# ptype, particle type, integer
+		# outputs: array of total masses within the radii specified from the center of mass, in Msun
+
+		# need a COM object, to find COM position
+		ME_COM = CenterOfMassMod.CenterOfMass(self.filename, ptype)
+		ME_COMP = ME_COM.COM_P(0.1)
+	        #print ME_COMP #troubleshoot
+
+                # initialize return array
+		masses_enclosed = np.zeros(len(radii))
+
+                # give radii array proper units
+                radii *= u.kpc 
+
+                # index to pick out particletype, find the radii of the particles in COM frame
+		self.index = np.where(self.data['type']==ptype)
+		mNew = self.m[self.index] 
+		xNew = self.x[self.index] - ME_COMP[0]
+		yNew = self.y[self.index] - ME_COMP[1]
+		zNew = self.z[self.index] - ME_COMP[2]
+                #print zNew[0] #troubleshoot
+		RNew = np.sqrt(xNew**2 + yNew**2 + zNew**2)
+
+                # loop over the different radii 
+		for i in range(len(radii)): 
+		        MEnc = np.sum(mNew[np.where(RNew <= radii[i])])
+			masses_enclosed[i] = MEnc
+
+                return masses_enclosed * u.Msun * 1e10
+
+        def MassEnclosedTotal(self,radii):
+                # function to calculate the total mass of all components out to varying radii
+                # input is an array of radii in kpc
+                # output is array of total ecnlosed masses at each radii in Msun
+
+                # prepare for galaxies w/out a bulge (i.e. M33)
+                if self.gname != "M33":
+                        Mtot = self.MassEnclosed(radii,1)+ self.MassEnclosed(radii,2) + self.MassEnclosed(radii,3)
+                else:
+                        Mtot = self. MassEnclosed(radii,1)+ self.MassEnclosed(radii,2)
+                return Mtot
+        
+        def HernquistProfile(self,r,a,Mhalo):
+                # function that computes the mass within a radius using a theoretical profile
+                # M = (Mhalo * r**2)/(a+r)**2
+                # inputs:
+                # radius in kpc
+                # scale factor in kpc 
+                # total halo mass Mhalo in Msun
+                # returns enclosed mass predicted by hernquist profile
+                return (Mhalo * r**2)/(a+r)**2
+        
+        def CircularVelocity(self,radii,ptype):
+                # function to calculate circular speed of orbiters at a certain radius, assuming spherical symmetry
+                # inputs:
+                # particle type as integer
+                # array of radii in kpc
+                # returns array of velocities at each radius
+                # Vcirc = sqrt(G*MEnc/r)
+                Vcircs = np.sqrt(G*self.MassEnclosed(radii,ptype)/radii)
+                return Vcircs
+        
+        def CircularVelocityTotal(self,radii):
+                # function to find the circular speed of orbiters at a certain radius, assuming spherical symmetry
+                # array of radii in kpc
+                # returns array of velocities at each radius
+                # Vcirc = sqrt(G*MEnc/r)
+                VcircTotal = np.sqrt(G*self.MassEnclosedTotal(radii)/radii)
+                return VcircTotal
+        
+        def HernquistVCirc(self,radii,a,Mhalo):
+                # function to find the circular speed of orbiters at a certain radius, assuming spherical symmetry
+                # inputs:
+                # radii, array of radii in kpc
+                # a scale radius in kpc
+                # MHalo dark matter halo mass in Msun
+                # returns array of velocities at each radius
+                # Vcirc = sqrt(G*MEnc/r)
+                return np.sqrt(G*self.HernquistProfile(radii,a,self.MassEnclosed(radii,1))/radii)
+
+"""
+#test prints
+MW = MassProfile("MW",0)
+r = np.arange(0.25,30.5,1.5)
+ME = MW.MassEnclosed(r,1) 
+
+print ME
+"""
