@@ -1,0 +1,16 @@
+# import modules
+import numpy as np
+import astropy.units as u
+from astropy.constants import G
+
+# import plotting modules
+import matplotlib.pyplot as plt
+import matplotlib
+
+# read in data from files
+
+MW = np.genfromtxt('Orbit_MW.txt')
+M31 = np.genfromtxt('Orbit_M31.txt')
+M33 = np.genfromtxt('Orbit_M33.txt')
+
+print M33[0]

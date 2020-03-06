@@ -1,0 +1,8 @@
+1. The milky way and andromeda will have two close encounters/collisions before finally merging their COMs on the 3rd encounter.
+
+2. For MW and M31, the relative velocities are inversely proportional to the relative position, with the velocity skyrocketing when they are close together or diminsihing when they are apart. The same is true for M33 and M31.  
+
+3. The radius of milky way's disk is 25 kpc, andromeda's is 35 kpc so I'll take the sum of that to be the collision distance (ignoring other effects such as orientation). They will come within 50kpc in 3.83 Myr.
+
+After that, M33's orbit gets pulled in, maximizing at ~100 kpc separation instead of ~200 before the collision.
+ 
