@@ -203,6 +203,19 @@ MWCOM = CenterOfMass("MW_000.txt", 2)
 MW_COMP = MWCOM.COM_P(0.1)
 MW_COMV = MWCOM.COM_V(MW_COMP[0],MW_COMP[1],MW_COMP[2])
 
+M31COM = CenterOfMass("M31_000.txt", 2) 
+M31_COMP = M31COM.COM_P(0.1)
+M31_COMV = M31COM.COM_V(M31_COMP[0],M31_COMP[1],M31_COMP[2])
+
+M33COM = CenterOfMass("M33_000.txt", 2) 
+M33_COMP = M33COM.COM_P(0.1)
+M33_COMV = M33COM.COM_V(M33_COMP[0],M33_COMP[1],M33_COMP[2])
+
 # now write your own code to answer questions
 
 
+M31_M33_pdiff = M31_COMP-M33_COMP
+M31_M33_vdiff = M31_COMV-M33_COMV
+print ("The difference in position and velocity of M33 and M31")
+print np.round(M31_M33_pdiff,2)
+print np.round(M31_M33_vdiff,2)

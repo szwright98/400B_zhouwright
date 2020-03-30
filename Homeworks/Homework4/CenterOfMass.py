@@ -228,16 +228,11 @@ print("M33")
 print M33_COMP
 print M33_COMV
 
-#differences in velocity and distance for the MW and M31
-M31_MW_pdiff = np.sqrt(np.sum((M31_COMP-MW_COMP)**2))
-M31_MW_vdiff = np.sqrt(np.sum((M31_COMV-MW_COMV)**2))
-print ("The difference in position and velocity of MW and M31")
-print np.round(M31_MW_pdiff,2)
-print np.round(M31_MW_vdiff,2)
+
 
 #differences in velocity and distance for the M33 and M31
-M31_M33_pdiff = np.sqrt(np.sum((M31_COMP-M33_COMP)**2))
-M31_M33_vdiff = np.sqrt(np.sum((M31_COMV-M33_COMV)**2))
+M31_M33_pdiff = M31_COMP-M33_COMP
+M31_M33_vdiff = M31_COMV-M33_COMV
 print ("The difference in position and velocity of M33 and M31")
 print np.round(M31_M33_pdiff,2)
 print np.round(M31_M33_vdiff,2)
