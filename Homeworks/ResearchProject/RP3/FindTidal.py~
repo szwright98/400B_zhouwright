@@ -1,0 +1,60 @@
+import numpy as np
+import astropy.units as u
+from CenterOfMassMod import CenterOfMass
+from ReadFile import Read
+from MassCalc import MassProfile
+
+# We want to iterate over the entire time, once and only once
+# need mass profile object for each step
+# want to store at each step: particles that are outside the jacobi radius of their galaxy, particles that are escaping their own galaxy, particles tha are escaping the merged galaxies
+# have to calculate jacobi radius for each particle, in addition to the escape velocity of each particle
+
+for i in range(10):
+    # declare all the mass profile objects
+    MP = MassProfile('MW',i)
+    #MP = MassProfile('M31',i)
+    #MP = MassProfile('MW',i, True,'M31')
+    #MP = MassProfile('M31',i,True,'MW')
+
+    a = 0.5 # pretty much the same for both
+
+    # get particles outside the jacobi radius
+    
+    # get enclosed mass at each particles radius, then get Jacobi radius at each particle
+    Menc = MassEnclosedTotal(MP.R1)
+    JRadii = MP.JacobiRadius(MP.R1,MP.m,Menc)
+    
+    # make index that only pulls out the outliers
+
+    out_ind = np.where(MP.R1 > JRadii)
+
+
+
+    # get particles that are escaping
+
+    bulge = MP.MassEnclosed(MP.R1,1)
+    disk = MP.MassEnclosed(MP.R1,2)
+    halo = MP.MassEnclosed(MP.R1,3)
+
+    EVel = MP.EVelocity(MP.R1,a,MP.z1,bulge,disk,halo)
+
+    # make index that only pulls out escaping objects
+
+    esc_ind = np.where(MP.V1 > EVel)
+
+    # make all the arrays or whatever
+
+    outliers  = np.zeros((1,8))
+    time_outliers = np.full((len(MP.m1[outliers]),1),snap)
+    outliers = np.vstack((outliers,[time_outliers,MP.m1[outliers],MP.x1[outliers],MP.y1[outliers],/
+                                    MP.z1[outliers],MP.vx1[outliers],MP.vy1[outliers],/
+                                    MP.vz1[outliers]]))
+    escapers  = np.zeros((1,8))
+    time_escapers = np.full((len(MP.m1[escapers]),1),snap)
+    escaperss = np.vstack((escapers,[time_escapers,MP.m1[escapers],MP.x1[escapers],MP.y1[escapers],/
+                                    MP.z1[escapers],MP.vx1[escapers],MP.vy1[escapers],/
+                                    MP.vz1[escape]]))
+    
+    
+outliers = np.delete(outliers,0,0)
+escapers = np.delete(escapers,0,0)
