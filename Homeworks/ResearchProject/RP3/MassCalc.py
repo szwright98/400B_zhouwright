@@ -179,7 +179,9 @@ class MassProfile:
                 # M, mass of the component (bulge or halo)
                 # phi = -GM/sqrt(R^2+(a+sqrt(b^2+z^2))^2)
                 b = a/5.0
-                return -G*Mdisk/np.sqrt(radii**2+(a+np.sqrt(b**2+z**2))**2)
+                B = a+np.sqrt((b**2)+(z**2))
+                Denom = np.sqrt((radii**2) + (B**2))
+                return -G*Mdisk/Denom
         
         def EVelocity(self,radii,a,z,Mbulge,Mdisk,Mhalo):
                 # find the total escape velocity for all galactic components
@@ -193,7 +195,7 @@ class MassProfile:
                 HaloPhi = self.HernquistPotential(radii,a,Mhalo)
 
                 # gravitational potentials obey the law of superposition
-                return np.sqrt(np.abs((2*DiskPhi + BulgePhi + HaloPhi)))
+                return np.sqrt(2*np.abs((DiskPhi + BulgePhi + HaloPhi)))
         
         def JacobiRadius(self,radii,m,MEnclosed):
                 # calculate the jacobi radius, which we will say is the outer limit of the galaxy.

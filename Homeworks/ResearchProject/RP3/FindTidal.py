@@ -13,8 +13,8 @@ I want to map the tidal features of M31 and MW as they merge, with the ultimte g
 # need mass profile object for each step
 # want to store at each step: particles that are outside the jacobi radius of their galaxy, particles that are escaping their own galaxy, particles tha are escaping the merged galaxies
 # have to calculate jacobi radius for each particle, in addition to the escape velocity of each particle
-
-for i in range(10):
+for m in range(1):
+    i = 800
     print i
     # declare all the mass profile objects
     MP = MassProfile('MW','M31',i)
@@ -34,7 +34,8 @@ for i in range(10):
 
     out_ind = np.where(MP.R1 > JRadii)
 
-
+    print(MP.R1) #troubleshooting
+    print(JRadii) #troubleshooting
 
     # get particles that are escaping
 
@@ -44,23 +45,43 @@ for i in range(10):
 
     EVel = MP.EVelocity(MP.R1,a,MP.z1,bulge,disk,halo)
 
+    print(EVel) #troubleshooting
+
     # make index that only pulls out escaping objects
 
 
     esc_ind = np.where(MP.V1 > EVel)
 
-    # make all the arrays or whatever
+    # make all the arrays
 
+   
     outliers  = np.zeros((1,8))
-    time_outliers = np.full((len(MP.m1[out_ind]),1),i)
-    outliers = np.vstack((outliers,[time_outliers,MP.m1[out_ind],MP.x1[out_ind],MP.y1[out_ind],\
-                                    MP.z1[out_ind],MP.vx1[out_ind],MP.vy1[out_ind],\
-                                    MP.vz1[out_ind]]))
     escapers  = np.zeros((1,8))
-    time_escapers = np.full((len(MP.m1[esc_ind]),1),i)
-    escapers = np.vstack((escapers,[time_escapers,MP.m1[esc_ind],MP.x1[esc_ind],MP.y1[esc_ind],\
-                                    MP.z1[esc_ind],MP.vx1[esc_ind],MP.vy1[esc_ind],\
-                                    MP.vz1[esc_ind]]))
+    
+    # only do the above if that snapshot actually has outliers
+    if len(MP.m1[out_ind]) > 0:
+        # first organize the data of all the outlying particles into columns of mass, x, y, z, vx, vz, vy
+        time_outliers = np.full(len(MP.m1[out_ind]),i)
+        # make a temporary array storing all the relevant values for this snap
+        outliers_temp = np.array([time_outliers, MP.m1[out_ind],MP.x1[out_ind],MP.y1[out_ind],\
+                                        MP.z1[out_ind],MP.vx1[out_ind],MP.vy1[out_ind],\
+                                        MP.vz1[out_ind]])
+       
+        
+        outliers = np.vstack((outliers,outliers_temp.T))
+
+        # exact same process as above 
+    if len(MP.m1[esc_ind]) > 0:
+       
+        time_escapers = np.full(len(MP.m1[esc_ind]),i)
+    
+        escape_temp = np.array([time_escapers,MP.m1[esc_ind],MP.x1[esc_ind],MP.y1[esc_ind],\
+                                        MP.z1[esc_ind],MP.vx1[esc_ind],MP.vy1[esc_ind],\
+                                        MP.vz1[esc_ind]])
+        print(np.shape(escape_temp)) #troubleshooting
+        
+        escapers = np.vstack((escapers,escape_temp.T)) # need transverse of the array  
+        print(escapers)
     
     
 outliers = np.delete(outliers,0,0)
