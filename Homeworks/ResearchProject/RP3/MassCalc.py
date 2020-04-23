@@ -46,18 +46,22 @@ class MassProfile:
                 self.V1 = np.sqrt(self.vx1**2 + self.vy1**2 +self.vz1**2)
 	        #print self.z #troubleshoot
 
+                self.diskindex = np.where(self.data1['type'] == 2)
+                
+                # repeat above with second galaxy
+		# use galaxy and snap to reconstruct string name
+	        ilbl2 = '000' +str(snap)
+		# remove all but three last digits
+	        ilbl2 = ilbl2[-3:]
+		self.filename2 = "./VLowRes/%s_"%(galaxy2) + ilbl2 + '.txt'
+	        #print (self.filename) #troubleshooting
+		# usual file reading
+		self.time2, self.total2, self.data2 = Read(self.filename2)
+		self.gname2 = galaxy2 
+
 
                 if(self.IncludeCompanion is True):
-                        # repeat above with second galaxy
-		        # use galaxy and snap to reconstruct string name
-		        ilbl2 = '000' +str(snap)
-		        # remove all but three last digits
-		        ilbl2 = ilbl2[-3:]
-		        self.filename2 = "./VLowRes/%s_"%(galaxy2) + ilbl2 + '.txt'
-	                #print (self.filename) #troubleshooting
-		        # usual file reading
-		        self.time2, self.total2, self.data2 = Read(self.filename2)
-		        self.gname2 = galaxy2 
+                        # only do  this part if you actually need it 
 		        # pull data values. no need to distinguish by particle type (yet)
 		        self.m2 = self.data2['m']
 		        self.x2 = self.data2['x']
@@ -80,7 +84,15 @@ class MassProfile:
 	        #print ME_COMP #troubleshoot
 
                 # initialize return array
-		masses_enclosed = np.zeros(len(radii))
+                # length is an issue, since radii can be a single value
+                # convert the single value to an array
+                #print(radii) # troubleshooting
+                try:
+                        numberofradii = len(radii)
+                except TypeError:
+                        radii = np.array([radii])
+                        numberofradii = len(radii)
+		masses_enclosed = np.zeros(numberofradii)
 
                 # give radii array proper units
                 #radii *= u.kpc 
@@ -102,7 +114,7 @@ class MassProfile:
 		        R2New = np.sqrt(x2New**2 + y2New**2 + z2New**2)
 
                 # loop over the different radii 
-		for i in range(len(radii)): 
+		for i in range(numberofradii): 
 		        MEnc = np.sum(m1New[np.where(R1New <= radii[i])])
                         if (self.IncludeCompanion is True):
                                 MEnc += np.sum(m2New[np.where(R2New <= radii[i])])
@@ -183,29 +195,33 @@ class MassProfile:
                 Denom = np.sqrt((radii**2) + (B**2))
                 return -G*Mdisk/Denom
         
-        def EVelocity(self,radii,a,z,Mbulge,Mdisk,Mhalo):
+        def EVelocity(self,radii,a,z):
                 # find the total escape velocity for all galactic components
                 # inputs:
                 # raddi an array of radii or a single radius
                 # z, a particle's height
                 # a, scale length
                 # Mbulge,Mdisk,Mhalo, enclosed masses of the components of the galaxy
-                DiskPhi = self.MiyamotoNagaiPotential(radii,a,z,Mdisk)
-                BulgePhi = self.HernquistPotential(radii,a,Mbulge)
-                HaloPhi = self.HernquistPotential(radii,a,Mhalo)
+                DiskPhi = self.MiyamotoNagaiPotential(radii,a,z,self.MassEnclosed(radii,2))
+                BulgePhi = self.HernquistPotential(radii,a,self.MassEnclosed(radii,3))
+                HaloPhi = self.HernquistPotential(radii,a,self.MassEnclosed(radii,1))
+                #print(HaloPhi) # troublshooting
+                #print(self.MassEnclosed(radii,2)) # troublshooting
+
 
                 # gravitational potentials obey the law of superposition
                 return np.sqrt(2*np.abs((DiskPhi + BulgePhi + HaloPhi)))
         
-        def JacobiRadius(self,radii,m,MEnclosed):
+        def JacobiRadius(self, R, Msat, Mhost):
                 # calculate the jacobi radius, which we will say is the outer limit of the galaxy.
                 # ideally tidal features will fall out of this radius
                 # inputs:
-                # radii, array of radii or single radius
-                # m, mass of orbiting particle
-                # MEnclosed, enclosed mass of the host galaxy (not calculated dynamically)
+                # R, distancce between the galaies
+                # Msat, mass of orbiting galaxy (alternates in each case) 
+                # MEnclosed, enclosed mass of the host galaxy (at radius of the satellite)
 
-                return radii*(m/(2*MEnclosed))**(1/3)
+
+                return R*(Msat/(2*Mhost))**(1/3)
 
         """
         def JacobiOutliers(self,radii,m, MEnclosed):

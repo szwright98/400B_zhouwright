@@ -165,14 +165,14 @@ class CenterOfMass:
 
         # determine the position of all particles relative to the center of mass position
         # write your own code below
-        xV = self.x*u.kpc - COMX
-        yV = self.y*u.kpc - COMY
-        zV = self.z*u.kpc - COMZ
+        xV = self.x - COMX
+        yV = self.y - COMY
+        zV = self.z - COMZ
         RV = np.sqrt(xV**2 + yV**2 + zV**2)
         
         # determine the index for those particles within the max radius
         # write your own code below
-        indexV = np.where(RV < RVMAX)
+        indexV = np.where(RV < RVMAX.value)
 
         # determine the velocity and mass of those particles within the mas radius
         # write your own code below
