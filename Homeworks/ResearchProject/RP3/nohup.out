@@ -1,0 +1,30 @@
+250
+Traceback (most recent call last):
+  File "FindTidal.py", line 49, in <module>
+    Msat = MP.MassEnclosedTotal(GalR) #enclosed mass of the satellite within GalR
+  File "/home/szwright98/400B_zhouwright/Homeworks/ResearchProject/RP3/MassCalc.py", line 133, in MassEnclosedTotal
+    Mtot = self.MassEnclosed(radii,1)+ self.MassEnclosed(radii,2) + self.MassEnclosed(radii,3)
+  File "/home/szwright98/400B_zhouwright/Homeworks/ResearchProject/RP3/MassCalc.py", line 109, in MassEnclosed
+    m2New = self.m2[self.index] 
+IndexError: index 675000 is out of bounds for axis 1 with size 675000
+250
+260
+270
+280
+290
+300
+310
+320
+330
+340
+350
+360
+370
+380
+390
+400
+410
+420
+430
+440
+450

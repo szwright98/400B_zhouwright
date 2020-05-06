@@ -29,7 +29,7 @@ class MassProfile:
 		ilbl1 = '000' +str(snap)
 		# remove all but three last digits
 		ilbl1 = ilbl1[-3:]
-		self.filename1 = "./VLowRes/%s_"%(galaxy1) + ilbl1 + '.txt'
+		self.filename1 = "./HighRes/%s_"%(galaxy1) + ilbl1 + '.txt'
 	        #print (self.filename) #troubleshooting
 		# usual file reading
 		self.time1, self.total1, self.data1 = Read(self.filename1)
@@ -53,7 +53,7 @@ class MassProfile:
 	        ilbl2 = '000' +str(snap)
 		# remove all but three last digits
 	        ilbl2 = ilbl2[-3:]
-		self.filename2 = "./VLowRes/%s_"%(galaxy2) + ilbl2 + '.txt'
+		self.filename2 = "./HighRes/%s_"%(galaxy2) + ilbl2 + '.txt'
 	        #print (self.filename) #troubleshooting
 		# usual file reading
 		self.time2, self.total2, self.data2 = Read(self.filename2)
@@ -106,6 +106,7 @@ class MassProfile:
                 #print zNew[0] #troubleshoot
 		R1New = np.sqrt(x1New**2 + y1New**2 + z1New**2)
                 if (self.IncludeCompanion is True):
+                
                         m2New = self.m2[self.index] 
 		        x2New = self.x2[self.index] - ME_COMP[0].value
 		        y2New = self.y2[self.index] - ME_COMP[1].value

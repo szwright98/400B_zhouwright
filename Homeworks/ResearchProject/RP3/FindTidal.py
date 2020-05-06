@@ -13,11 +13,19 @@ I want to map the tidal features of M31 and MW as they merge, with the ultimte g
 # need mass profile object for each step
 # want to store at each step: particles that are outside the jacobi radius of their galaxy, particles that are escaping their own galaxy, particles tha are escaping the merged galaxies
 # have to calculate jacobi radius for each particle, in addition to the escape velocity of each particle
-i = 500
-for m in range(1):
+
+
+# make all the arrays
+
+   
+outliers  = np.zeros((1,8))
+escapers  = np.zeros((1,8))
+    
+i = 250
+while i < 451:
     print i
     # declare all the mass profile objects
-    MP = MassProfile('MW','M31',i,True)
+    MP = MassProfile('MW','M31',i)
     # need this oe to get the mass enclosed for jacobi radius (since it depends on the other galaxy's mass)
     MP2 = MassProfile('M31','MW',i)
 
@@ -38,9 +46,9 @@ for m in range(1):
     # get particles outside the jacobi radius
     # get enclosed mass at each particles radius, then get Jacobi radius at each particle
     Menc = MP2.MassEnclosedTotal(GalR) # mass of the host glaxy enclosed at the satellite's radius
-    Msat = MP.MassEnclosedTotal(GalR) # total mass of the satellite- should be within GalR
+    Msat = MP.MassEnclosedTotal(GalR) #enclosed mass of the satellite within GalR
     JRadii = MP.JacobiRadius(GalR,Msat,Menc)
-    
+    #print("JRadii Calculated")
   
     # convert outliers location to the COM frame
 
@@ -58,26 +66,20 @@ for m in range(1):
     out_ind = np.where(R1New > JRadii)
     #print(R1New) #troubleshooting
     #print(JRadii) #troubleshooting
-
+    #print ("Index Created")
 
 
     # get particles that are escaping
-    EVel = MP.EVelocity(R1New,a,z1New)
+    #EVel = MP.EVelocity(R1New,a,z1New)
     #print(V1New)
     #print(EVel) #troubleshooting
     # make index that only pulls out escaping objects
-    esc_ind = np.where(V1New > EVel)
+    #esc_ind = np.where(V1New > EVel)
 
 
 
     
 
-    # make all the arrays
-
-   
-    outliers  = np.zeros((1,8))
-    escapers  = np.zeros((1,8))
-    
     # only do the above if that snapshot actually has outliers
     if len(MP.m1[out_ind]) > 0:
         # first organize the data of all the outlying particles into columns of mass, x, y, z, vx, vz, vy
@@ -89,8 +91,10 @@ for m in range(1):
        
         
         outliers = np.vstack((outliers,outliers_temp.T))
+    i += 10
 
-        # exact same process as above 
+    """ 
+    # exact same process as above 
     if len(MP.m1[esc_ind]) > 0:
        
         time_escapers = np.full(len(MP.m1[esc_ind]),i)
@@ -103,18 +107,19 @@ for m in range(1):
         
         escapers = np.vstack((escapers,escape_temp.T)) # need transverse of the array  
         #print(escapers) # troubleshooting
-        i += 5 
+	""" 
     
-    
+   
+	
 outliers = np.delete(outliers,0,0)
-escapers = np.delete(escapers,0,0)
+#escapers = np.delete(escapers,0,0)
 
 
-np.savetxt("MW_Outliers500.txt", outliers, fmt = "%11.3f"*8, comments='#',
+np.savetxt("MW_Outliers250to450.txt", outliers, fmt = "%11.3f"*8, comments='#',
                    header="{:>10s}{:>11s}{:>11s}{:>11s}{:>11s}{:>11s}{:>11s}{:>11s}"\
                    .format('t', 'm', 'x', 'y', 'z', 'vx', 'vy', 'vz'))
-
+"""
 np.savetxt("MW_Escapers500.txt", escapers, fmt = "%11.3f"*8, comments='#',
                    header="{:>10s}{:>11s}{:>11s}{:>11s}{:>11s}{:>11s}{:>11s}{:>11s}"\
                    .format('t', 'm', 'x', 'y', 'z', 'vx', 'vy', 'vz'))
-
+"""
